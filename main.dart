@@ -1,32 +1,107 @@
-
-import 'package:flash_app/blocs/auth_bloc.dart';
-import 'package:flash_app/src/resources/home_page.dart';
-import 'package:flash_app/src/resources/register_page.dart';
-import 'src/app.dart';
-import 'src/resources/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-void main() {
-  runApp(MyApp());
-}
+
+void main() => runApp(MyApp());
+
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider.value(
-            value:Authentication(),
-          )
-        ],
-        child: MaterialApp(
-          title: 'Login App',
-          theme: ThemeData(
-            primaryColor: Colors.blue,
-          ),
-          home: LoginPage(),
-        )
+    final title = 'Các cơ sở Garage gần nhất';
+
+    return MaterialApp(
+      title: title,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: ListView(
+          children: <Widget>[
+             ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+              color: Colors.blue[800], size: 35),
+              title: Text('Garage Didioto Đà Nẵng',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text('171 Tôn Đức Thắng, Quận Hải Châu, Đà Nẵng',
+                  style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+                  color: Colors.blue[800], size: 35),
+              title: Text('Garage Ô tô Tín Bình Auto',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text('Lô 15D25 Lê Văn Linh, Phường Khuê Trung, Quận Cẩm Lệ, Đà Nẵng',
+                  style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+                  color: Colors.blue[800], size: 35),
+              title: Text('Garage Ô tô Hoàng Trang',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text('366 Nguyễn Tất Thành, Thanh Bình, Quận Thanh Khê, Đà Nẵng',
+              style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+                  color: Colors.blue[800], size: 35),
+              title: Text('Garage Ô tô Đà Nẵng',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text(' Lô 149 Hoàng Thị Loan, Hòa Minh, Liên Chiểu, Đà Nẵng',
+                  style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+                  color: Colors.blue[800], size: 35),
+              title: Text('Garage Hoánh Thành Workshop',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text(' Lô 68 Bùi Tá Hán, Ngũ Hành Sơn, Đà Nẵng',
+                  style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+                  color: Colors.blue[800], size: 35),
+              title: Text('Garage Ô tô Nguyễn Thận Lợi',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text(' 779 Ngô Quyền, Quận Sơn Trà, Đà Nẵng',
+                  style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.home_repair_service_sharp,
+                  color: Colors.blue[800], size: 35),
+              title: Text('Garage Ô tô Hà Thư',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0)),
+              subtitle: Text(' 43 Trịnh Quang Xuân, Hoà Châu, Hòa Vang, Đà Nẵng',
+                  style: TextStyle(fontSize: 15.0)),
+              onTap: () {
+                print('onTap');
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

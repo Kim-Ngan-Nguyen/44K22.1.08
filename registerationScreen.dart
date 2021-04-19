@@ -1,26 +1,21 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/material.dart';
-import 'package:drivers_app/AllScreens/mainscreen.dart';
-import 'package:drivers_app/AllScreens/registerationScreen.dart';
-import 'package:drivers_app/AllWidgets/progressDialog.dart';
+import 'package:drivers_app/AllScreens/carInfoScreen.dart';
 import 'package:drivers_app/configMaps.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:drivers_app/AllScreens/loginScreen.dart';
+import 'package:drivers_app/AllScreens/mainscreen.dart';
+import 'package:drivers_app/AllWidgets/progressDialog.dart';
 import 'package:drivers_app/main.dart';
 
 
-class LoginScreen extends StatefulWidget
+class RegisterationScreen extends StatelessWidget
 {
-  static const String idScreen = "login";
+  static const String idScreen = "register";
 
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-
-
-class _LoginScreenState extends State<LoginScreen>
-{
+  TextEditingController nameTextEditingController = TextEditingController();
   TextEditingController emailTextEditingController = TextEditingController();
+  TextEditingController phoneTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
 
   @override
@@ -32,19 +27,12 @@ class _LoginScreenState extends State<LoginScreen>
           padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 35.0,),
+              SizedBox(height: 20.0,),
               Image(
                 image: AssetImage("images/ic_logo.png"),
                 width: 390.0,
                 height: 250.0,
                 alignment: Alignment.center,
-              ),
-
-              SizedBox(height: 1.0,),
-              Text(
-                "XIN CHÀO!",
-                style: TextStyle(fontSize: 24.0, fontFamily: "Brand Bold"),
-                textAlign: TextAlign.center,
               ),
 
               Padding(
@@ -54,10 +42,44 @@ class _LoginScreenState extends State<LoginScreen>
 
                     SizedBox(height: 1.0,),
                     TextField(
+                      controller: nameTextEditingController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        labelText: "Tên Garage",
+                        labelStyle: TextStyle(
+                          fontSize: 14.0,
+                        ),
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10.0,
+                        ),
+                      ),
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+
+                    SizedBox(height: 1.0,),
+                    TextField(
                       controller: emailTextEditingController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: "Email",
+                        labelStyle: TextStyle(
+                          fontSize: 14.0,
+                        ),
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10.0,
+                        ),
+                      ),
+                      style: TextStyle(fontSize: 14.0),
+                    ),
+
+                    SizedBox(height: 1.0,),
+                    TextField(
+                      controller: phoneTextEditingController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: "Số Điện Thoại",
                         labelStyle: TextStyle(
                           fontSize: 14.0,
                         ),
@@ -95,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen>
                         height: 50.0,
                         child: Center(
                           child: Text(
-                            "Đăng Nhập",
+                            "Tạo Tài Khoản",
                             style: TextStyle(fontSize: 18.0, fontFamily: "Brand Bold"),
                           ),
                         ),
@@ -105,17 +127,25 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                       onPressed: ()
                       {
-                        if(!emailTextEditingController.text.contains("@"))
+                        if(nameTextEditingController.text.length < 3)
                         {
-                          displayToastMessage("Địa chỉ MAil không tồn tại.", context);
+                          displayToastMessage("name must be atleast 3 Characters.", context);
                         }
-                        else if(passwordTextEditingController.text.isEmpty)
+                        else if(!emailTextEditingController.text.contains("@"))
                         {
-                          displayToastMessage("Bắt Buộc.", context);
+                          displayToastMessage("Email address is not Valid.", context);
+                        }
+                        else if(phoneTextEditingController.text.isEmpty)
+                        {
+                          displayToastMessage("Phone Number is mandatory.", context);
+                        }
+                        else if(passwordTextEditingController.text.length < 6)
+                        {
+                          displayToastMessage("Password must be atleast 6 Characters.", context);
                         }
                         else
                         {
-                          loginAndAuthenticateUser(context);
+                          registerNewUser(context);
                         }
                       },
                     ),
@@ -128,10 +158,10 @@ class _LoginScreenState extends State<LoginScreen>
               FlatButton(
                 onPressed: ()
                 {
-                  Navigator.pushNamedAndRemoveUntil(context, RegisterationScreen.idScreen, (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(context, LoginScreen.idScreen, (route) => false);
                 },
                 child: Text(
-                  "Chưa Có Tài Khoản? Đăng Ký Ngay",
+                  "Có Tài Khoản? Đăng Nhập",
                 ),
               ),
             ],
@@ -141,21 +171,22 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  void loginAndAuthenticateUser(BuildContext context) async
+  void registerNewUser(BuildContext context) async
   {
     showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context)
-      {
-        return ProgressDialog(message: "Authenticating, Please wait...",);
-      }
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context)
+        {
+          return ProgressDialog(message: "Registering, Please wait...",);
+        }
     );
 
     final User firebaseUser = (await _firebaseAuth
-        .signInWithEmailAndPassword(
+        .createUserWithEmailAndPassword(
         email: emailTextEditingController.text,
         password: passwordTextEditingController.text
     ).catchError((errMsg){
@@ -163,27 +194,33 @@ class _LoginScreenState extends State<LoginScreen>
       displayToastMessage("Error: " + errMsg.toString(), context);
     })).user;
 
-    if(firebaseUser != null)
+    if(firebaseUser != null) //user created
     {
-      driversRef.child(firebaseUser.uid).once().then((DataSnapshot snap){
-        if(snap.value != null)
-        {
-          currentfirebaseUser = firebaseUser;
-          Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);
-          displayToastMessage("you are logged-in now.", context);
-        }
-        else
-        {
-          Navigator.pop(context);
-          _firebaseAuth.signOut();
-          displayToastMessage("No record exists for this user. Please create new account.", context);
-        }
-      });
+      //save user info to database
+      Map userDataMap = {
+        "name": nameTextEditingController.text.trim(),
+        "email": emailTextEditingController.text.trim(),
+        "phone": phoneTextEditingController.text.trim(),
+      };
+
+      driversRef.child(firebaseUser.uid).set(userDataMap);
+
+      currentfirebaseUser = firebaseUser;
+
+      displayToastMessage("Congratulations, your account has been created.", context);
+
+      Navigator.pushNamed(context, CarInfoScreen.idScreen);
     }
     else
     {
       Navigator.pop(context);
-      displayToastMessage("Error Occured, can not be Signed-in.", context);
+      //error occured - display error msg
+      displayToastMessage("New user account has not been Created.", context);
     }
   }
+}
+
+displayToastMessage(String message, BuildContext context)
+{
+  Fluttertoast.showToast(msg: message);
 }

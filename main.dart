@@ -1,81 +1,62 @@
-import 'package:flutter_app2/page/advanced_tile_page.dart';
-import 'package:flutter_app2/page/basic_tile_page.dart';
-import 'package:flutter_app2/page/text_tile_page.dart';
+import 'package:drivers_app/AllScreens/carInfoScreen.dart';
+import 'package:drivers_app/configMaps.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:drivers_app/AllScreens/loginScreen.dart';
+import 'package:drivers_app/AllScreens/mainscreen.dart';
+import 'package:drivers_app/AllScreens/registerationScreen.dart';
+import 'package:drivers_app/DataHandler/appData.dart';
 
-Future main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  await Firebase.initializeApp();
+
+  currentfirebaseUser = FirebaseAuth.instance.currentUser;
 
   runApp(MyApp());
 }
 
+DatabaseReference usersRef =
+    FirebaseDatabase.instance.reference().child("users");
+DatabaseReference driversRef =
+    FirebaseDatabase.instance.reference().child("drivers");
+DatabaseReference newRequestsRef =
+    FirebaseDatabase.instance.reference().child("Ride Requests");
+DatabaseReference rideRequestRef = FirebaseDatabase.instance
+    .reference()
+    .child("drivers")
+    .child(currentfirebaseUser.uid)
+    .child("newRide");
+
+DatabaseReference garageRef =
+    FirebaseDatabase.instance.reference().child("garage");
+
 class MyApp extends StatelessWidget {
-  static final String title = 'Garage gần nhất';
-
+  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => AppData(),
+      child: MaterialApp(
+        title: 'Taxi Driver App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        initialRoute: FirebaseAuth.instance.currentUser == null
+            ? LoginScreen.idScreen
+            : MainScreen.idScreen,
+        routes: {
+          RegisterationScreen.idScreen: (context) => RegisterationScreen(),
+          LoginScreen.idScreen: (context) => LoginScreen(),
+          MainScreen.idScreen: (context) => MainScreen(),
+          CarInfoScreen.idScreen: (context) => CarInfoScreen(),
+        },
         debugShowCheckedModeBanner: false,
-        title: title,
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: MainPage(),
-      );
-}
-
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  int index = 0;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        bottomNavigationBar: buildBottomBar(),
-        body: buildPages(),
-      );
-
-  Widget buildBottomBar() {
-    final style = TextStyle(color: Colors.white);
-
-    return BottomNavigationBar(
-      backgroundColor: Theme.of(context).primaryColor,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white70,
-      currentIndex: index,
-      items: [
-        BottomNavigationBarItem(
-          icon: Text('Thông tin', style: style),
-          title: Text('cơ bản'),
-        ),
-        BottomNavigationBarItem(
-          icon: Text('Thông tin', style: style),
-          title: Text('chi tiết'),
-        ),
-        BottomNavigationBarItem(
-          icon: Text('ExpansionTile', style: style),
-          title: Text('Advanced'),
-        ),
-      ],
-      onTap: (int index) => setState(() => this.index = index),
+      ),
     );
-  }
-
-  Widget buildPages() {
-    switch (index) {
-      case 0:
-        return TextTilePage();
-      case 1:
-        return BasicTilePage();
-      case 2:
-        return AdvancedTilePage();
-      default:
-        return Container();
-    }
   }
 }
